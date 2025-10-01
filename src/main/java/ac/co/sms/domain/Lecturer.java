@@ -17,8 +17,12 @@ public class Lecturer extends User {
         this.department = builder.department;
     }
 
-    public String getEmployeeNumber() { return employeeNumber; }
-    public String getDepartment() { return department; }
+    public String getEmployeeNumber() {
+        return employeeNumber;
+    }
+    public String getDepartment() {
+        return department;
+    }
 
     @Override
     public String toString() {
@@ -39,16 +43,20 @@ public class Lecturer extends User {
         private String department;
 
         public Builder setName(String name){
-            this.name = name; return this;
+            this.name = name;
+            return this;
         }
         public Builder setEmail(String email){
-            this.email = email; return this;
+            this.email = email;
+            return this;
         }
         public Builder setPassword(String password){
-            this.password = password; return this;
+            this.password = password;
+            return this;
         }
         public Builder setUserType(UserType userType){
-            this.userType = userType; return this;
+            this.userType = userType;
+            return this;
         }
 
         public Builder setEmployeeNumber(String employeeNumber){

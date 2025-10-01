@@ -34,6 +34,10 @@ public class User {
         this.userType = userType;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Long getUserId() {
         return userId;
     }
@@ -64,6 +68,8 @@ public class User {
                 ", userType=" + userType +
                 '}';
     }
+
+
 
     public static class Builder{
         private Long userId;

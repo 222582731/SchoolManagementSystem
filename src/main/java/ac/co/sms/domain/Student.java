@@ -17,8 +17,12 @@ public class Student extends User {
         this.yearOfStudy = builder.yearOfStudy;
     }
 
-    public String getStudentNumber() { return studentNumber; }
-    public Integer getYearOfStudy() { return yearOfStudy; }
+    public String getStudentNumber() {
+        return studentNumber;
+    }
+    public Integer getYearOfStudy() {
+        return yearOfStudy;
+    }
 
     @Override
     public String toString() {
@@ -28,6 +32,8 @@ public class Student extends User {
                 ", yearOfStudy=" + yearOfStudy +
                 '}';
     }
+
+
 
     public static class Builder {
         private String name;

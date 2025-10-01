@@ -33,12 +33,30 @@ public class Enrollment {
         this.status = builder.status;
     }
 
-    public Long getId() { return id; }
-    public Student getStudent() { return student; }
-    public String getCourseCode() { return courseCode; }
-    public String getCourseName() { return courseName; }
-    public LocalDate getEnrollmentDate() { return enrollmentDate; }
-    public EnrollmentStatus getStatus() { return status; }
+    public Long getId() {
+        return id;
+    }
+    public Student getStudent() {
+        return student;
+    }
+    public String getCourseCode() {
+        return courseCode;
+    }
+    public String getCourseName() {
+        return courseName;
+    }
+    public LocalDate getEnrollmentDate() {
+        return enrollmentDate;
+    }
+    public EnrollmentStatus getStatus() {
+        return status;
+    }
+
+    //will be called in my service
+    public Long getEnrollmentId() {
+        return id;
+    }
+
 
     @Override
     public String toString() {
@@ -51,6 +69,13 @@ public class Enrollment {
                 ", status=" + status +
                 '}';
     }
+
+
+    //used in the serviceTest
+    public void setEnrollmentDate(LocalDate of) {
+        this.enrollmentDate = of;
+    }
+
 
     public static class Builder{
         private Long id;
