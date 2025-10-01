@@ -1,7 +1,7 @@
-package ac.co.sms.domain;
+package ac.co.sms.domain.enums;
 
 public enum UserType {
     STUDENT,
     LECTURER,
-    ADMIN
+    ENROLLED, ADMIN
 }
