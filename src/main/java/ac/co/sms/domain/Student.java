@@ -1,5 +1,6 @@
 package ac.co.sms.domain;
 
+import ac.co.sms.domain.enums.UserType;
 import jakarta.persistence.Entity;
 
 @Entity
@@ -11,18 +12,13 @@ public class Student extends User {
     public Student() {}
 
     public Student(Builder builder){
-        super(builder); // call User's builder
+        super(builder.name, builder.email, builder.password, builder.userType); // call User constructor
         this.studentNumber = builder.studentNumber;
         this.yearOfStudy = builder.yearOfStudy;
     }
 
-    public String getStudentNumber() {
-        return studentNumber;
-    }
-
-    public Integer getYearOfStudy() {
-        return yearOfStudy;
-    }
+    public String getStudentNumber() { return studentNumber; }
+    public Integer getYearOfStudy() { return yearOfStudy; }
 
     @Override
     public String toString() {
@@ -33,28 +29,44 @@ public class Student extends User {
                 '}';
     }
 
-    public static class Builder extends User.Builder {
+    public static class Builder {
+        private String name;
+        private String email;
+        private String password;
+        private UserType userType;
+
         private String studentNumber;
         private Integer yearOfStudy;
 
-        public Builder setStudentNumber(String studentNumber){
-            this.studentNumber = studentNumber;
-            return this;
+        public Builder setName(String name){
+            this.name = name; return this;
         }
-
+        public Builder setEmail(String email){
+            this.email = email; return this;
+        }
+        public Builder setPassword(String password){
+            this.password = password; return this;
+        }
+        public Builder setUserType(UserType userType){
+            this.userType = userType; return this;
+        }
+        public Builder setStudentNumber(String studentNumber){
+            this.studentNumber = studentNumber; return this;
+        }
         public Builder setYearOfStudy(Integer yearOfStudy){
-            this.yearOfStudy = yearOfStudy;
-            return this;
+            this.yearOfStudy = yearOfStudy; return this;
         }
 
         public Builder copy(Student student){
-            super.copy(student);
+            this.name = student.getName();
+            this.email = student.getEmail();
+            this.password = student.getPassword();
+            this.userType = student.getUserType();
             this.studentNumber = student.getStudentNumber();
             this.yearOfStudy = student.getYearOfStudy();
             return this;
         }
 
-        @Override
         public Student build(){
             return new Student(this);
         }

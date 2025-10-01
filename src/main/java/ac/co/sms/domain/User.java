@@ -1,5 +1,6 @@
 package ac.co.sms.domain;
 
+import ac.co.sms.domain.enums.UserType;
 import jakarta.persistence.*;
 
 @Entity
@@ -24,6 +25,13 @@ public class User {
         this.email = builder.email;
         this.password = builder.password;
         this.userType = builder.userType;
+    }
+
+    public User(String name, String email, String password, UserType userType) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.userType = userType;
     }
 
     public Long getUserId() {
@@ -97,5 +105,6 @@ public class User {
         public User build(){
             return new User(this);
         }
+
     }
 }
