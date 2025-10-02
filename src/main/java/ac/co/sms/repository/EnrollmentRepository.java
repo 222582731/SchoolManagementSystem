@@ -10,4 +10,5 @@ import java.util.*;
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
     List<Enrollment> findByCourseCode(String courseCode);
+    List<Enrollment> findByStudent_StudentNumber(String studentNumber);
 }

@@ -57,6 +57,13 @@ public class Enrollment {
         return id;
     }
 
+    //used in the serviceTest
+    public void setEnrollmentDate(LocalDate of) {
+        this.enrollmentDate = of;
+    }
+    public void setEnrollmentId(Long enrollmentId) {
+        this.id = enrollmentId;
+    }
 
     @Override
     public String toString() {
@@ -71,10 +78,7 @@ public class Enrollment {
     }
 
 
-    //used in the serviceTest
-    public void setEnrollmentDate(LocalDate of) {
-        this.enrollmentDate = of;
-    }
+
 
 
     public static class Builder{

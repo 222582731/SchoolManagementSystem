@@ -58,6 +58,11 @@ public class User {
         return userType;
     }
 
+
+    //used in my serviceTest
+    public void setUserId(Long userId) {
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -68,6 +73,7 @@ public class User {
                 ", userType=" + userType +
                 '}';
     }
+
 
 
 
