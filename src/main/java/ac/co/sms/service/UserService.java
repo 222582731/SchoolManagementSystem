@@ -56,12 +56,11 @@ public class UserService implements IUserService {
         }
     }
 
-    // --- Login method using DB query ---
+   
     public Optional<User> login(String email, String password) {
         return userRepository.findByEmailAndPassword(email, password);
     }
 
-    // --- Register method using DB query ---
     public User register(User user) {
         if(userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("Email already registered");
