@@ -74,7 +74,13 @@ public class User {
                 '}';
     }
 
+    public void setEmail(String mail) {
+        this.email = mail;
+    }
 
+    public void setPassword(String password123) {
+        this.password = password123;
+    }
 
 
     public static class Builder{

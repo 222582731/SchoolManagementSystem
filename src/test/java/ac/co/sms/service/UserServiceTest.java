@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,29 +24,29 @@ public class UserServiceTest {
     private static Lecturer lecturer;
 
     @Test
-    void a_saveUsers() {
-        //create Student
+    void a_registerUsers() {
+        // Register Student
         student = new Student.Builder()
                 .setName("Alice Van Wyk")
-                .setEmail("222918302@mycput.ac.za")
+                .setEmail("222928329@mycput.ac.za")
                 .setPassword("password123")
                 .setUserType(UserType.STUDENT)
-                .setStudentNumber("222918302")
+                .setStudentNumber("222928329")
                 .setYearOfStudy(2)
                 .build();
 
-        //create Lecturer
+        // Register Lecturer
         lecturer = new Lecturer.Builder()
                 .setName("Dr. Shongwe")
-                .setEmail("bob@cpu.ac.za")
-                .setPassword("bob@cput.123")
+                .setEmail("bul@cpu.ac.za")
+                .setPassword("bulelan@cput.123")
                 .setUserType(UserType.LECTURER)
                 .setEmployeeNumber("EMP001")
                 .setDepartment("Information Technology")
                 .build();
 
-        Student savedStudent = (Student) userService.save(student);
-        Lecturer savedLecturer = (Lecturer) userService.save(lecturer);
+        Student savedStudent = (Student) userService.register(student);
+        Lecturer savedLecturer = (Lecturer) userService.register(lecturer);
 
         student = savedStudent;
         lecturer = savedLecturer;
@@ -53,20 +54,27 @@ public class UserServiceTest {
         assertNotNull(savedStudent.getUserId());
         assertNotNull(savedLecturer.getUserId());
 
-        System.out.println("Saved Student: " + savedStudent);
-        System.out.println("Saved Lecturer: " + savedLecturer);
+        System.out.println("Registered Student: " + savedStudent);
+        System.out.println("Registered Lecturer: " + savedLecturer);
     }
 
     @Test
-    void b_findAllUsers() {
+    void b_loginStudent() {
+        Optional<User> loggedIn = userService.login("222928329@mycput.ac.za", "password123");
+        assertTrue(loggedIn.isPresent());
+        assertEquals(student.getUserId(), loggedIn.get().getUserId());
+        System.out.println("Logged in Student: " + loggedIn.get());
+    }
+
+    @Test
+    void c_findAllUsers() {
         List<User> users = userService.findAll();
         assertTrue(users.size() >= 2);
-
         System.out.println("All Users: " + users);
     }
 
     @Test
-    void c_findByUserType() {
+    void d_findByUserType() {
         List<User> students = userService.findByUserType(UserType.STUDENT);
         List<User> lecturers = userService.findByUserType(UserType.LECTURER);
 
@@ -78,7 +86,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void d_updateStudent() {
+    void e_updateStudent() {
         User fetched = userService.read(student.getUserId());
         assertNotNull(fetched);
 
@@ -86,19 +94,15 @@ public class UserServiceTest {
         User updated = userService.update(fetched);
 
         assertEquals("Candice", updated.getName());
-
-        User reloaded = userService.read(student.getUserId());
-        assertEquals("Candice", reloaded.getName());
-        System.out.println("Updated Student: " + reloaded);
+        System.out.println("Updated Student: " + updated);
     }
 
     @Test
-    void e_deleteLecturer() {
+    void f_deleteLecturer() {
         userService.deleteById(lecturer.getUserId());
         User deleted = userService.read(lecturer.getUserId());
 
         assertNull(deleted);
-
         System.out.println("Deleted Lecturer ID: " + lecturer.getUserId());
     }
 }

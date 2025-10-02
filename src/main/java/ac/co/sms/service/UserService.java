@@ -25,20 +25,16 @@ public class UserService implements IUserService {
 
     @Override
     public User read(Long userId) {
-        return userRepository.findById(userId)
-                .orElse(null);
+        return userRepository.findById(userId).orElse(null);
     }
 
-    //if user exist update the user
     @Override
     public User update(User entity) {
         if (userRepository.existsById(entity.getUserId())) {
-            return userRepository.save(entity); // save will update if ID exists
+            return userRepository.save(entity);
         }
         throw new IllegalArgumentException("User not found with id: " + entity.getUserId());
     }
-
-
 
     @Override
     public List<User> findByUserType(UserType userType) {
@@ -59,5 +55,23 @@ public class UserService implements IUserService {
         }
     }
 
+    // --- NEW: Login method ---
+    public Optional<User> login(String email, String password) {
+        return userRepository.findAll().stream()
+                .filter(u -> u.getEmail().equalsIgnoreCase(email) && u.getPassword().equals(password))
+                .findFirst();
+    }
 
+    // --- NEW: Register method ---
+    public User register(User user) {
+        // Optional: check if email already exists
+        boolean exists = userRepository.findAll().stream()
+                .anyMatch(u -> u.getEmail().equalsIgnoreCase(user.getEmail()));
+
+        if (exists) {
+            throw new IllegalArgumentException("Email already registered");
+        }
+
+        return userRepository.save(user);
+    }
 }
