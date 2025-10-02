@@ -9,7 +9,5 @@ import java.util.*;
 @Repository
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
-    List<Enrollment> findByStudent_StudentNumber(String studentNumber);
     List<Enrollment> findByCourseCode(String courseCode);
-    Enrollment findByStudent_StudentNumberAndCourseCode(String studentNumber, String courseCode);
 }
