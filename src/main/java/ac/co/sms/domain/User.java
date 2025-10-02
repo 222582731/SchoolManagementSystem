@@ -59,8 +59,20 @@ public class User {
     }
 
 
-    //used in my serviceTest
+    //used in my serviceTest & controllerTest
     public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+    public void setEmail(String mail) {
+        this.email = mail;
+    }
+
+    public void setPassword(String password123) {
+        this.password = password123;
+    }
+
+    public void setUserType(UserType userType) {
+        this.userType = userType;
     }
 
     @Override
@@ -73,15 +85,6 @@ public class User {
                 ", userType=" + userType +
                 '}';
     }
-
-    public void setEmail(String mail) {
-        this.email = mail;
-    }
-
-    public void setPassword(String password123) {
-        this.password = password123;
-    }
-
 
     public static class Builder{
         private Long userId;

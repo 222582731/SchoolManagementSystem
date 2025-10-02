@@ -8,9 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-@CrossOrigin
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -21,27 +22,29 @@ public class UserController {
         this.userService = userService;
     }
 
-    // --- Create / Register ---
+    // --- Register ---
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
             User newUser = userService.register(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 
     // --- Login ---
     @PostMapping("/login")
-    public ResponseEntity<User> loginUser(@RequestBody User loginRequest) {
+    public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
         Optional<User> user = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
 
-        return user.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+        return user.<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "Invalid email or password")));
     }
 
-    // --- Existing CRUD operations ---
+    // --- Existing CRUD ---
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User savedUser = userService.save(user);
@@ -52,8 +55,7 @@ public class UserController {
 
     @GetMapping("/all")
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.findAll();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(userService.findAll());
     }
 
     @GetMapping("/read/{id}")
@@ -64,10 +66,9 @@ public class UserController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        user.setUserId(id); // make sure ID is set for update
+        user.setUserId(id);
         try {
-            User updated = userService.update(user);
-            return ResponseEntity.ok(updated);
+            return ResponseEntity.ok(userService.update(user));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
@@ -85,7 +86,6 @@ public class UserController {
 
     @GetMapping("/type/{userType}")
     public ResponseEntity<List<User>> getUsersByType(@PathVariable UserType userType) {
-        List<User> users = userService.findByUserType(userType);
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(userService.findByUserType(userType));
     }
 }

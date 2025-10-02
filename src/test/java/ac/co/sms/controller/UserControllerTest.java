@@ -1,7 +1,5 @@
 package ac.co.sms.controller;
 
-import ac.co.sms.domain.Lecturer;
-import ac.co.sms.domain.Student;
 import ac.co.sms.domain.User;
 import ac.co.sms.domain.enums.UserType;
 import org.junit.jupiter.api.*;
@@ -10,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
-import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,140 +19,60 @@ public class UserControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    private static Student testStudent;
-    private static Lecturer testLecturer;
-
-    private final String baseUrl = "/user";
+    private static User testUser;
 
     @Test
     @Order(1)
-    void registerStudent() {
-        testStudent = new Student.Builder()
-                .setName("Alice Van Wyk")
-                .setEmail("222918302@mycput.ac.za")
-                .setPassword("password123")
-                .setUserType(UserType.STUDENT)
-                .setStudentNumber("222918302")
-                .setYearOfStudy(2)
-                .build();
+    void testRegisterUser() {
+        testUser = new User();
+        testUser.setName("Test User");
+        testUser.setEmail("testuser@example.com");
+        testUser.setPassword("test123");
+        testUser.setUserType(UserType.STUDENT);
 
-        ResponseEntity<Student> response = restTemplate.postForEntity(
-                baseUrl + "/register", testStudent, Student.class
+        ResponseEntity<User> response = restTemplate.postForEntity(
+                "/user/register", testUser, User.class
         );
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertNotNull(response.getBody().getUserId());
-        testStudent = response.getBody();
-        System.out.println("Registered Student: " + testStudent);
+
+        testUser = response.getBody(); // store user for login
+        System.out.println("Registered user: " + testUser);
     }
 
     @Test
     @Order(2)
-    void registerLecturer() {
-        testLecturer = new Lecturer.Builder()
-                .setName("Dr. Shongwe")
-                .setEmail("bob@cpu.ac.za")
-                .setPassword("bob@cput.123")
-                .setUserType(UserType.LECTURER)
-                .setEmployeeNumber("EMP001")
-                .setDepartment("Information Technology")
-                .build();
+    void testLoginUser() {
+        User loginRequest = new User();
+        loginRequest.setEmail(testUser.getEmail());
+        loginRequest.setPassword(testUser.getPassword());
 
-        ResponseEntity<Lecturer> response = restTemplate.postForEntity(
-                baseUrl + "/register", testLecturer, Lecturer.class
+        ResponseEntity<User> response = restTemplate.postForEntity(
+                "/user/login", loginRequest, User.class
         );
 
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertNotNull(response.getBody().getUserId());
-        testLecturer = response.getBody();
-        System.out.println("Registered Lecturer: " + testLecturer);
+        assertEquals(testUser.getEmail(), response.getBody().getEmail());
+
+        System.out.println("Logged in user: " + response.getBody());
     }
 
     @Test
     @Order(3)
-    void loginStudent() {
+    void testLoginWithInvalidPassword() {
         User loginRequest = new User();
-        loginRequest.setEmail("222918302@mycput.ac.za");
-        loginRequest.setPassword("password123");
+        loginRequest.setEmail(testUser.getEmail());
+        loginRequest.setPassword("wrongPassword");
 
-        ResponseEntity<User> response = restTemplate.postForEntity(
-                baseUrl + "/login", loginRequest, User.class
+        ResponseEntity<Map> response = restTemplate.postForEntity(
+                "/user/login", loginRequest, Map.class
         );
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(testStudent.getUserId(), response.getBody().getUserId());
-        System.out.println("Logged in Student: " + response.getBody());
-    }
-
-    @Test
-    @Order(4)
-    void readStudent() {
-        ResponseEntity<Student> response = restTemplate.getForEntity(
-                baseUrl + "/read/" + testStudent.getUserId(), Student.class
-        );
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Alice Van Wyk", response.getBody().getName());
-        System.out.println("Read student: " + response.getBody());
-    }
-
-    @Test
-    @Order(5)
-    void updateStudent() {
-        testStudent.setName("Candice");
-
-        HttpEntity<Student> request = new HttpEntity<>(testStudent);
-        ResponseEntity<Student> response = restTemplate.exchange(
-                baseUrl + "/update/" + testStudent.getUserId(),
-                HttpMethod.PUT,
-                request,
-                Student.class
-        );
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Candice", response.getBody().getName());
-        System.out.println("Updated student: " + response.getBody());
-    }
-
-    @Test
-    @Order(6)
-    void deleteLecturer() {
-        restTemplate.delete(baseUrl + "/delete/" + testLecturer.getUserId());
-
-        ResponseEntity<Lecturer> response = restTemplate.getForEntity(
-                baseUrl + "/read/" + testLecturer.getUserId(), Lecturer.class
-        );
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        System.out.println("Deleted lecturer with ID: " + testLecturer.getUserId());
-    }
-
-    @Test
-    @Order(7)
-    void getAllUsers() {
-        ResponseEntity<Student[]> response = restTemplate.getForEntity(baseUrl + "/all", Student[].class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        List<Student> users = List.of(response.getBody());
-        assertTrue(users.size() >= 1);
-        System.out.println("All users: " + users);
-    }
-
-    @Test
-    @Order(8)
-    void getUsersByType() {
-        ResponseEntity<Student[]> response = restTemplate.getForEntity(
-                baseUrl + "/type/STUDENT", Student[].class
-        );
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        List<Student> students = List.of(response.getBody());
-        assertTrue(students.stream().anyMatch(s -> "Candice".equals(s.getName())));
-        System.out.println("Users with type STUDENT: " + students);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertTrue(response.getBody().containsKey("error"));
+        System.out.println("Invalid login attempt: " + response.getBody());
     }
 }

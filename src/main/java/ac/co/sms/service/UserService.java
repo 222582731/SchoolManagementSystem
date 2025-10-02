@@ -6,7 +6,8 @@ import ac.co.sms.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService implements IUserService {
@@ -55,23 +56,16 @@ public class UserService implements IUserService {
         }
     }
 
-    // --- NEW: Login method ---
+    // --- Login method using DB query ---
     public Optional<User> login(String email, String password) {
-        return userRepository.findAll().stream()
-                .filter(u -> u.getEmail().equalsIgnoreCase(email) && u.getPassword().equals(password))
-                .findFirst();
+        return userRepository.findByEmailAndPassword(email, password);
     }
 
-    // --- NEW: Register method ---
+    // --- Register method using DB query ---
     public User register(User user) {
-        // Optional: check if email already exists
-        boolean exists = userRepository.findAll().stream()
-                .anyMatch(u -> u.getEmail().equalsIgnoreCase(user.getEmail()));
-
-        if (exists) {
+        if(userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("Email already registered");
         }
-
         return userRepository.save(user);
     }
 }

@@ -28,18 +28,18 @@ public class UserServiceTest {
         // Register Student
         student = new Student.Builder()
                 .setName("Alice Van Wyk")
-                .setEmail("222928329@mycput.ac.za")
+                .setEmail("223344@mycput.ac.za")
                 .setPassword("password123")
                 .setUserType(UserType.STUDENT)
-                .setStudentNumber("222928329")
+                .setStudentNumber("223344")
                 .setYearOfStudy(2)
                 .build();
 
         // Register Lecturer
         lecturer = new Lecturer.Builder()
                 .setName("Dr. Shongwe")
-                .setEmail("bul@cpu.ac.za")
-                .setPassword("bulelan@cput.123")
+                .setEmail("buli@cpu.ac.za")
+                .setPassword("bulelani@cput.123")
                 .setUserType(UserType.LECTURER)
                 .setEmployeeNumber("EMP001")
                 .setDepartment("Information Technology")
@@ -60,7 +60,7 @@ public class UserServiceTest {
 
     @Test
     void b_loginStudent() {
-        Optional<User> loggedIn = userService.login("222928329@mycput.ac.za", "password123");
+        Optional<User> loggedIn = userService.login("223344@mycput.ac.za", "password123");
         assertTrue(loggedIn.isPresent());
         assertEquals(student.getUserId(), loggedIn.get().getUserId());
         System.out.println("Logged in Student: " + loggedIn.get());
