@@ -22,7 +22,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    // --- Register ---
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
@@ -34,7 +33,7 @@ public class UserController {
         }
     }
 
-    // --- Login ---
+ 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
         Optional<User> user = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
@@ -44,7 +43,7 @@ public class UserController {
                         .body(Map.of("error", "Invalid email or password")));
     }
 
-    // --- Existing CRUD ---
+    
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User savedUser = userService.save(user);
