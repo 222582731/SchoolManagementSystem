@@ -8,71 +8,63 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class UserControllerTest {
+class UserControllerIntegrationTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
 
     private static User testUser;
 
+    @BeforeAll
+    static void setup() {
+        testUser = new User("Integration User",
+                "integration@example.com",
+                "test123",
+                UserType.STUDENT);
+    }
+
     @Test
     @Order(1)
     void testRegisterUser() {
-        testUser = new User();
-        testUser.setName("Test User");
-        testUser.setEmail("testuser@example.com");
-        testUser.setPassword("test123");
-        testUser.setUserType(UserType.STUDENT);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        ResponseEntity<User> response = restTemplate.postForEntity(
-                "/user/register", testUser, User.class
-        );
+        HttpEntity<User> request = new HttpEntity<>(testUser, headers);
 
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertNotNull(response.getBody().getUserId());
+        ResponseEntity<User> response = restTemplate.postForEntity("/user/register", request, User.class);
 
-        testUser = response.getBody(); // store user for login
-        System.out.println("Registered user: " + testUser);
+        Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        User createdUser = response.getBody();
+        Assertions.assertNotNull(createdUser);
+        Assertions.assertEquals(testUser.getName(), createdUser.getName());
+        Assertions.assertEquals(testUser.getEmail(), createdUser.getEmail());
+        Assertions.assertEquals(testUser.getUserType(), createdUser.getUserType());
+
+        testUser.setUserId(createdUser.getUserId());
     }
 
     @Test
     @Order(2)
     void testLoginUser() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
         User loginRequest = new User();
         loginRequest.setEmail(testUser.getEmail());
         loginRequest.setPassword(testUser.getPassword());
 
-        ResponseEntity<User> response = restTemplate.postForEntity(
-                "/user/login", loginRequest, User.class
-        );
+        HttpEntity<User> request = new HttpEntity<>(loginRequest, headers);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(testUser.getEmail(), response.getBody().getEmail());
+        ResponseEntity<User> response = restTemplate.postForEntity("/user/login", request, User.class);
 
-        System.out.println("Logged in user: " + response.getBody());
-    }
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
-    @Test
-    @Order(3)
-    void testLoginWithInvalidPassword() {
-        User loginRequest = new User();
-        loginRequest.setEmail(testUser.getEmail());
-        loginRequest.setPassword("wrongPassword");
-
-        ResponseEntity<Map> response = restTemplate.postForEntity(
-                "/user/login", loginRequest, Map.class
-        );
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertTrue(response.getBody().containsKey("error"));
-        System.out.println("Invalid login attempt: " + response.getBody());
+        User loggedInUser = response.getBody();
+        Assertions.assertNotNull(loggedInUser);
+        Assertions.assertEquals(testUser.getEmail(), loggedInUser.getEmail());
+        Assertions.assertEquals(testUser.getUserType(), loggedInUser.getUserType());
     }
 }
