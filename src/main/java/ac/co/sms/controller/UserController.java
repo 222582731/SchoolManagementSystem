@@ -25,17 +25,17 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
-        System.out.println("Attempting to register user: " + user); // debug input
+        System.out.println("Attempting to register user: " + user);
 
         try {
             User newUser = userService.register(user);
-            System.out.println("Registration successful: " + newUser); // debug success
+            System.out.println("Registration successful: " + newUser);
             return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
         } catch (IllegalArgumentException e) {
-            System.err.println("Registration failed: " + e.getMessage()); // debug specific error
+            System.err.println("Registration failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (Exception e) {
-            System.err.println("Unexpected server error: " + e.getMessage()); // debug unexpected errors
+            System.err.println("Unexpected server error: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }

@@ -33,6 +33,9 @@ public class Student extends User {
                 '}';
     }
 
+    public void setStudentNumber(String s123) {
+        this.studentNumber = s123;
+    }
 
 
     public static class Builder {

@@ -77,8 +77,12 @@ public class Enrollment {
                 '}';
     }
 
+    public void setAttendance(String attendance) {
+        
+    }
 
-
+    public void setGrade(String grade) {
+    }
 
 
     public static class Builder{

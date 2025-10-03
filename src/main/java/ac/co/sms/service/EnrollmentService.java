@@ -31,7 +31,7 @@ public class EnrollmentService implements IEnrollmentService {
     @Override
     public Enrollment update(Enrollment entity) {
         if (enrollmentRepository.existsById(entity.getEnrollmentId())) {
-            return enrollmentRepository.save(entity); // save updates if ID exists
+            return enrollmentRepository.save(entity);
         }
         throw new IllegalArgumentException("Enrollment not found with id: " + entity.getEnrollmentId());
     }
@@ -39,6 +39,11 @@ public class EnrollmentService implements IEnrollmentService {
     @Override
     public List<Enrollment> findByStudent_StudentNumber(String studentNumber) {
         return enrollmentRepository.findByStudent_StudentNumber(studentNumber);
+    }
+
+    @Override
+    public List<Enrollment> findByCourseCode(String courseCode) {
+        return enrollmentRepository.findByCourseCode(courseCode);
     }
 
     @Override
